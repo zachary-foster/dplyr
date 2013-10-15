@@ -12,13 +12,16 @@
 nasa
 head(as.data.frame(nasa))
 
-titanic <- from_array(Titanic)
+titanic <- as.tbl_array(Titanic)
 head(as.data.frame(titanic))
 
-expend <- from_array(USPersonalExpenditure)
-head(as.data.frame(expend))
-
-admit <- from_array(UCBAdmissions)
+admit <- as.tbl_array(UCBAdmissions)
 head(as.data.frame(admit))
+
+as.tbl_array(esoph, dim_names = 1:3)
+}
+\seealso{
+  \code{\link{as.tbl_array}} for ways of coercing existing
+  data structures into a \code{tbl_array}.
 }
 

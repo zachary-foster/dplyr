@@ -3,19 +3,19 @@
 #' This dense data representation. Useful for highly crossed data.
 #' 
 #' @export
+#' @seealso \code{\link{as.tbl_array}} for ways of coercing existing data
+#'   structures into a \code{tbl_array}.
 #' @examples
 #' nasa
 #' head(as.data.frame(nasa))
 #' 
-#' titanic <- from_array(Titanic)
+#' titanic <- as.tbl_array(Titanic)
 #' head(as.data.frame(titanic))
 #' 
-#' expend <- from_array(USPersonalExpenditure)
-#' head(as.data.frame(expend))
-#' 
-#' admit <- from_array(UCBAdmissions)
+#' admit <- as.tbl_array(UCBAdmissions)
 #' head(as.data.frame(admit))
 #' 
+#' as.tbl_array(esoph, dim_names = 1:3)
 tbl_array <- function(dimensions, measures) {
   # Dimensions is a list of vectors
   # Measures is a list of arrays - array dim matches length of dimensions
@@ -64,8 +64,18 @@ as.data.frame.tbl_array <- function(x) {
   all
 }
 
+# Coercion methods -------------------------------------------------------------
 
-from_array <- function(x, met_name = deparse(substitute(x)), dim_names = names(dimnames(x))) {
+#' Coerce an existing data structure into a \code{tbl_array}
+#' 
+#' @export
+as.tbl_array <- function(x, ...) UseMethod("as.tbl_array")
+ 
+#' @method as.tbl_array array
+#' @export
+#' @rdname as.tbl_array
+as.tbl_array.array <- function(x, met_name = deparse(substitute(x)), 
+                               dim_names = names(dimnames(x)), ...) {
   force(met_name)
   
   dims <- dimnames(x)
@@ -79,7 +89,18 @@ from_array <- function(x, met_name = deparse(substitute(x)), dim_names = names(d
   tbl_array(dims, mets)
 }
 
-to_dense <- function(df, dim_names) {
+#' @method as.tbl_array table
+#' @export
+#' @rdname as.tbl_array
+as.tbl_array.table <- as.tbl_array.array
+
+#' @method as.tbl_array data.frame
+#' @export
+#' @rdname as.tbl_array
+as.tbl_array.data.frame <- function(df, dim_names, ...) {
+  if (!is.character(dim_names)) {
+    dim_names <- names(df)[dim_names]
+  }
   met_names <- setdiff(names(df), dim_names)
   
   dims <- lapply(df[dim_names], unique)
