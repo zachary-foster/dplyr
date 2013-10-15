@@ -5,27 +5,24 @@
 #' @export
 #' @examples
 #' nasa
+#' head(as.data.frame(nasa))
 #' 
-#' seals_dense <- to_dense(seals, c("lat", "long"))
 #' titanic <- from_array(Titanic)
+#' head(as.data.frame(titanic))
+#' 
 #' expend <- from_array(USPersonalExpenditure)
+#' head(as.data.frame(expend))
+#' 
 #' admit <- from_array(UCBAdmissions)
-tbl_array <- function(data, labels = NULL) {
-  if (is.null(labels)) {
-    labels <- lapply(dimnames(data), type.convert, as.is = TRUE) 
-  }
-  assert_that(!is.null(names(labels)))
+#' head(as.data.frame(admit))
+#' 
+tbl_array <- function(dimensions, measures) {
+  # Dimensions is a list of vectors
+  # Measures is a list of arrays - array dim matches length of dimensions
   
-  dims <- vapply(labels, length, integer(1), USE.NAMES = FALSE)
-  assert_that(identical(dims, dim(data)))
-  
-  structure(list(data = ozone, labels = labels), class = "tbl_array")
+  structure(list(dims = dimensions, mets = measures), class = "tbl_array")
 }
 
-#' @S3method as.data.frame tbl_array
-as.data.frame.tbl_array <- function(x, ...) {
-  cbind(expand.grid(x$labels), value = as.vector(x$data))
-}
 
 #' @S3method tbl_vars tbl_array
 tbl_vars.tbl_array <- function(x) names(x$labels)
@@ -52,7 +49,18 @@ print.tbl_array <- function(x) {
   types <- vapply(x$mets, type_sum, character(1))
   vars <- paste0("M: ", names(x$mets), " [", types, "]")
   cat(vars, sep = "\n")
+}
+
+#' @S3method as.data.frame tbl_array
+as.data.frame.tbl_array <- function(x) {
+  dims <- expand.grid(x$dims, KEEP.OUT.ATTRS = FALSE)
+  mets <- lapply(x$mets, as.vector)
   
+  all <- c(dims, mets)
+  class(all) <- "data.frame"
+  attr(all, "row.names") <- .set_row_names(nrow(dims))
+  
+  all
 }
 
 var_index <- function(x, expr, parent = parent.frame()) {
@@ -188,16 +196,6 @@ find_index <- function(x, names) {
   unlist(lapply(x[-1], find_index, names = names))
 }
 
-to_sparse <- function(x) {
-  dims <- expand.grid(x$dims, KEEP.OUT.ATTRS = FALSE)
-  mets <- lapply(x$mets, as.vector)
-  
-  all <- c(dims, mets)
-  class(all) <- "data.frame"
-  attr(all, "row.names") <- .set_row_names(nrow(dims))
-  
-  all
-}
 
 undimname <- function(x) {
   dimnames(x) <- NULL
@@ -215,7 +213,7 @@ from_array <- function(x, met_name = deparse(substitute(x)), dim_names = names(d
   }
   mets <- setNames(list(undimname(x)), met_name)
   
-  structure(list(mets = mets, dims = dims), class = "tbl_array")
+  tbl_array(dims, mets)
 }
 
 to_dense <- function(df, dim_names) {
@@ -231,5 +229,5 @@ to_dense <- function(df, dim_names) {
   mets <- lapply(met_names, function(i) array(df[[i]], n))
   names(mets) <- met_names
   
-  structure(list(mets = mets, dims = dims), class = "tbl_array")
+  tbl_array(dims, mets)
 }
