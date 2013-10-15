@@ -13,7 +13,9 @@
 }
 \description{
   This dense data representation. Useful for highly crossed
-  data.
+  data. This is an experimental interface and little
+  performance optimisation has been done, but you may find
+  it useful as a way of conserving memory.
 }
 \examples{
 nasa

@@ -21,6 +21,27 @@ filter.tbl_array <- function(.data, ...) {
   .data
 }
 
+find_index_check <- function(x, names) {
+  idx <- find_index(x, names)
+  if (length(idx) != 1) {
+    stop(deparse(x), " does not refer to exactly one dimension.", call. = FALSE)
+  }
+  idx  
+}
+
+find_index <- function(x, names) {
+  # Base cases
+  if (is.atomic(x)) return(integer())
+  if (is.name(x)) {
+    var <- as.character(x)
+    return(which(var == names))
+  }
+  
+  # Recursive case: function call
+  stopifnot(is.call(x))
+  unlist(lapply(x[-1], find_index, names = names))
+}
+
 #' @S3method group_by tbl_array
 group_by.tbl_array <- function(.data, ...) {
   idx <- var_index(dots(...), .data$dims, parent.frame())
@@ -82,29 +103,3 @@ subs_index <- function(x, i, val, drop = FALSE) {
   eval(call)
 }
 
-find_index_check <- function(x, names) {
-  idx <- find_index(x, names)
-  if (length(idx) != 1) {
-    stop(deparse(x), " does not refer to exactly one dimension.", call. = FALSE)
-  }
-  idx  
-}
-
-find_index <- function(x, names) {
-  # Base cases
-  if (is.atomic(x)) return(integer())
-  if (is.name(x)) {
-    var <- as.character(x)
-    return(which(var == names))
-  }
-  
-  # Recursive case: function call
-  stopifnot(is.call(x))
-  unlist(lapply(x[-1], find_index, names = names))
-}
-
-
-undimname <- function(x) {
-  dimnames(x) <- NULL
-  x
-}

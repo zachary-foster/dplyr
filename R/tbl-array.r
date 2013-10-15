@@ -1,6 +1,8 @@
 #' A tbl based on an array
 #' 
-#' This dense data representation. Useful for highly crossed data.
+#' This dense data representation. Useful for highly crossed data. This is an
+#' experimental interface and little performance optimisation has been done,
+#' but you may find it useful as a way of conserving memory.
 #' 
 #' @export
 #' @param dimensions a named list of vectors
@@ -123,6 +125,11 @@ as.tbl_array.array <- function(x, met_name = deparse(substitute(x)),
   mets <- setNames(list(undimname(x)), met_name)
   
   tbl_array(dims, mets)
+}
+
+undimname <- function(x) {
+  dimnames(x) <- NULL
+  x
 }
 
 #' @method as.tbl_array table
