@@ -23,7 +23,6 @@ tbl_array <- function(dimensions, measures) {
   structure(list(dims = dimensions, mets = measures), class = "tbl_array")
 }
 
-
 #' @S3method tbl_vars tbl_array
 tbl_vars.tbl_array <- function(x) names(x$labels)
 
@@ -41,11 +40,13 @@ print.tbl_array <- function(x) {
       "\n", sep = "")
   }
   
+  # Dimensions
   types <- vapply(x$dims, type_sum, character(1))
   lengths <- vapply(x$dims, length, integer(1))
   vars <- paste0("D: ", names(x$dims), " [", types, ", ", lengths, "]")
   cat(vars, sep = "\n")
   
+  # Measures
   types <- vapply(x$mets, type_sum, character(1))
   vars <- paste0("M: ", names(x$mets), " [", types, "]")
   cat(vars, sep = "\n")
@@ -63,17 +64,11 @@ as.data.frame.tbl_array <- function(x) {
   all
 }
 
-var_index <- function(x, expr, parent = parent.frame()) {
-  nm <- names(x)
-  nms_list <- as.list(setNames(seq_along(nm), nm))
-  
-  unlist(lapply(expr, eval, nms_list, parent))
-}
 
 # select operates only on metrics: focussing on a subset, or reordering
 # doesn't affect dimensions in any way
 select.tbl_array <- function(x, ...) {
-  idx <- var_index(x$mets, dots(...), parent.frame())
+  idx <- var_index(dots(...), x$mets, parent.frame())
   x$mets <- x$mets[idx]
   x
 }
@@ -114,7 +109,7 @@ arrange.tbl_array <- function(.data, ...) {
 }
 
 group_by.tbl_array <- function(.data, ...) {
-  idx <- var_index(.data$dims, dots(...), parent.frame())
+  idx <- var_index(dots(...), .data$dims, parent.frame())
   .data$group <- idx
   .data
 }
