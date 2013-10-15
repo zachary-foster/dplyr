@@ -3,6 +3,9 @@
 #' This dense data representation. Useful for highly crossed data.
 #' 
 #' @export
+#' @param dimensions a named list of vectors
+#' @param measurs a named list of arrays. The dimension of each array should
+#'   be the same as the length of the dimensions.
 #' @seealso \code{\link{as.tbl_array}} for ways of coercing existing data
 #'   structures into a \code{tbl_array}.
 #' @examples
@@ -17,8 +20,25 @@
 #' 
 #' as.tbl_array(esoph, dim_names = 1:3)
 tbl_array <- function(dimensions, measures) {
-  # Dimensions is a list of vectors
-  # Measures is a list of arrays - array dim matches length of dimensions
+  if (!is.list(dimensions) || any_apply(dimensions, Negate(is.atomic)) || 
+      is.null(names(dimensions))) {
+    stop("Dimensions must be a named list of vectors", call. = FALSE)
+  }
+
+  if (!is.list(measures) || any_apply(measures, Negate(is.array)) ||
+    is.null(names(measures))) {
+    stop("Measures must be a named list of arrays", call. = FALSE)
+  }
+  
+  # Check measures have correct dimensions
+  dims <- vapply(dimensions, length, integer(1), USE.NAMES = FALSE)
+  dims_ok <- vapply(measures, function(x) identical(unname(dim(x)), dims), 
+    logical(1))
+  if (any(!dims_ok)) {
+    bad <- names(measures)[!dims_ok]
+    stop("Measures ", paste0(bad, collapse = ", "), " don't have correct ",
+      "dimensions (", paste0(dims, collapse = " x "), ")", call. = FALSE)
+  }
   
   structure(list(dims = dimensions, mets = measures), class = "tbl_array")
 }

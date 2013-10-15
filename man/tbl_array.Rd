@@ -4,6 +4,13 @@
 \usage{
   tbl_array(dimensions, measures)
 }
+\arguments{
+  \item{dimensions}{a named list of vectors}
+
+  \item{measurs}{a named list of arrays. The dimension of
+  each array should be the same as the length of the
+  dimensions.}
+}
 \description{
   This dense data representation. Useful for highly crossed
   data.
