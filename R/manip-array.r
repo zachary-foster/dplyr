@@ -1,17 +1,11 @@
-
-# select operates only on metrics: focussing on a subset, or reordering
-# doesn't affect dimensions in any way
+#' @S3method select tbl_array
 select.tbl_array <- function(x, ...) {
   idx <- var_index(dots(...), x$mets, parent.frame())
   x$mets <- x$mets[idx]
   x
 }
 
-# filter operates only on dimensions, focussing on a subset. Each component
-# of the expression can only have one dimension: this prevents you from making
-# non-rectangular subset
-#
-# filter(nasa, lat > 0, year == 2000)
+#' @S3method filter tbl_array
 filter.tbl_array <- function(.data, ...) {
   exprs <- dots(...)
   
@@ -27,34 +21,18 @@ filter.tbl_array <- function(.data, ...) {
   .data
 }
 
-arrange.tbl_array <- function(.data, ...) {
-  exprs <- dots(...)
-  
-  idx <- vapply(exprs, find_index_check, integer(1), names = names(.data$dims))
-  for(i in seq_along(exprs)) {
-    ind <- eval(exprs[[i]], .data$dims, parent.frame())
-    ord <- order(index)
-    
-    .data$dims[[idx[i]]] <- .data$dims[[idx[i]]][order]
-    .data$mets <- lapply(.data$mets, subs_index, idx[i], order)
-  }
-  
-  .data
-}
-
+#' @S3method group_by tbl_array
 group_by.tbl_array <- function(.data, ...) {
   idx <- var_index(dots(...), .data$dims, parent.frame())
   .data$group <- idx
   .data
 }
 
-# by_loc <- group_by(nasa, lat, long)
-# summarise(by_loc, pressure = max(pressure), temp = mean(temperature))
-
 # mutate and summarise operate similarly need to evaluate variables in special
 # context - need to use the same active environment tricks as in dplyr
 # for better performance
 
+#' @S3method summarise tbl_array
 summarise.tbl_array <- function(.data, ...) {
   exprs <- named_dots(...)
   out_dims <- .data$dims[.data$group]
@@ -66,6 +44,7 @@ summarise.tbl_array <- function(.data, ...) {
   }
   
   slices <- expand.grid(lapply(out_dims, seq_along), KEEP.OUT.ATTRS = FALSE)
+  
   
   # Loop over each group
   for (i in seq_len(nrow(slices))) {
@@ -102,7 +81,6 @@ subs_index <- function(x, i, val, drop = FALSE) {
   call <- as.call(c(quote(`[`), quote(x), args))
   eval(call)
 }
-
 
 find_index_check <- function(x, names) {
   idx <- find_index(x, names)
