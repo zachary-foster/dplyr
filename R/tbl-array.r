@@ -27,7 +27,7 @@
 #' # select() operates only on measures: it doesn't affect dimensions in any way
 #' select(nasa, cloudhigh:cloudmid)
 #' 
-#' # filter() operates only on dimensions, 
+#' # filter() operates only on dimensions
 #' filter(nasa, lat > 0, year == 2000)
 #' # Each component can only refer to one dimensions, ensuring that you always 
 #' # create a rectangular subset
