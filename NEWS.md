@@ -1,5 +1,4 @@
-dplyr 0.1.2
------------
+# dplyr 0.1.2
 
 * `select()` is substantially more powerful. You can use named arguments to
   rename existing variables, and new functions `starts_with()`, `ends_with()`,
@@ -19,8 +18,7 @@ dplyr 0.1.2
 
 * `rbind_all()` silently ignores data frames with 0 rows.
 
-dplyr 0.1.1
------------
+# dplyr 0.1.1
 
 ## Improvements
 
