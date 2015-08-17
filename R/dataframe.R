@@ -134,20 +134,21 @@ as_data_frame <- function(x) {
   if (any(is.na(names_x) | names_x == "")){
     stop("All elements must be named", call. = FALSE)
   }
+  if( !is.data.frame(x) ){
+    ok <- vapply(x, is_1d, logical(1))
+    if (any(!ok)) {
+      stop("data_frames can only contain 1d atomic vectors and lists",
+        call. = FALSE)
+    }
 
-  ok <- vapply(x, is_1d, logical(1))
-  if (any(!ok)) {
-    stop("data_frames can only contain 1d atomic vectors and lists",
-      call. = FALSE)
-  }
-
-  n <- unique(vapply(x, NROW, integer(1)))
-  if (length(n) != 1) {
-    stop("Columns are not all same length", call. = FALSE)
+    n <- unique(vapply(x, NROW, integer(1)))
+    if (length(n) != 1) {
+      stop("Columns are not all same length", call. = FALSE)
+    }
+    attr(x, "row.names") <- .set_row_names(n)
   }
 
   class(x) <- c("tbl_df", "tbl", "data.frame")
-  attr(x, "row.names") <- .set_row_names(n)
 
   x
 }
