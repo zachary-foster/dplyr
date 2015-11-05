@@ -177,6 +177,10 @@ grouped_indices_impl <- function(data, symbols) {
     .Call('dplyr_grouped_indices_impl', PACKAGE = 'dplyr', data, symbols)
 }
 
+global_subtitute <- function(call, df, env) {
+    .Call('dplyr_global_subtitute', PACKAGE = 'dplyr', call, df, env)
+}
+
 matrixToDataFrame <- function(x) {
     .Call('dplyr_matrixToDataFrame', PACKAGE = 'dplyr', x)
 }

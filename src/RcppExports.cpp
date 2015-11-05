@@ -504,6 +504,19 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// global_subtitute
+SEXP global_subtitute(SEXP call, DataFrame df, Environment env);
+RcppExport SEXP dplyr_global_subtitute(SEXP callSEXP, SEXP dfSEXP, SEXP envSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type call(callSEXP);
+    Rcpp::traits::input_parameter< DataFrame >::type df(dfSEXP);
+    Rcpp::traits::input_parameter< Environment >::type env(envSEXP);
+    __result = Rcpp::wrap(global_subtitute(call, df, env));
+    return __result;
+END_RCPP
+}
 // matrixToDataFrame
 List matrixToDataFrame(RObject x);
 RcppExport SEXP dplyr_matrixToDataFrame(SEXP xSEXP) {
