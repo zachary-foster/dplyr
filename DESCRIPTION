@@ -69,6 +69,7 @@ Collate:
     'group-size.r'
     'grouped-df.r'
     'grouped-dt.r'
+    'hybrid.R'
     'id.r'
     'inline.r'
     'join.r'
