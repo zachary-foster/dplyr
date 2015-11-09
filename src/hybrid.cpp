@@ -8,9 +8,14 @@ namespace dplyr {
   GlobalSubstitute::GlobalSubstitute( SEXP call_, const DataFrame& data, const Environment& env_ ) :
     call(call_),
     names(data.names()),
-    env(env_)
+    env(env_),
+    match("match")
   {
     call = traverse(call);
+  }
+
+  bool GlobalSubstitute::in_data( Symbol s){
+    return as<int>(match(CharacterVector::create(PRINTNAME(s)), names)) != NA_INTEGER ;
   }
 
   SEXP GlobalSubstitute::traverse(SEXP obj){

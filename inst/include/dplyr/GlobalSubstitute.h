@@ -20,8 +20,9 @@ namespace dplyr {
     RObject call ;
     CharacterVector names ;
     Environment env ;
+    Function match ;
 
-    // substiute global(foo) with value of foo in the env
+    // substitute global(foo) with value of foo in the env
     SEXP substitute_global(SEXP obj) ;
 
     // substutute column(x)
@@ -34,6 +35,8 @@ namespace dplyr {
     SEXP traverse_call(SEXP obj) ;
 
     SEXP traverse(SEXP obj) ;
+
+    bool in_data( Symbol s) ;
 
   } ;
 
