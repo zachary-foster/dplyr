@@ -3,6 +3,15 @@
 
 namespace dplyr {
 
+  struct TraverseResult {
+      SEXP result ;
+      bool needs_data ;
+
+      TraverseResult( SEXP result_, bool needs_data_ ) :
+        result(result_), needs_data(needs_data_)
+      {} ;
+  } ;
+
   class GlobalSubstitute {
   public:
 
@@ -24,18 +33,18 @@ namespace dplyr {
     dplyr_hash_map<SEXP, bool> indata_map ;
 
     // substitute global(foo) with value of foo in the env
-    SEXP substitute_global(SEXP obj, int depth) ;
+    TraverseResult substitute_global(SEXP obj, int depth) ;
 
     // substutute column(x)
-    SEXP substitute_column(SEXP obj, int depth) ;
+    TraverseResult substitute_column(SEXP obj, int depth) ;
 
     // substitute x$y
-    SEXP substitute_dollar(SEXP obj, int depth) ;
+    TraverseResult substitute_dollar(SEXP obj, int depth) ;
 
     // traverse a LANGSXP
-    SEXP traverse_call(SEXP obj, int depth) ;
+    TraverseResult traverse_call(SEXP obj, int depth) ;
 
-    SEXP traverse(SEXP obj, int depth) ;
+    TraverseResult traverse(SEXP obj, int depth) ;
 
     bool in_data( SEXP s) ;
 
