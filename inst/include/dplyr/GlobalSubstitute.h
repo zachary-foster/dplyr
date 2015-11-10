@@ -46,6 +46,9 @@ namespace dplyr {
 
     TraverseResult traverse(SEXP obj, int depth) ;
 
+    // traverse a function
+    TraverseResult traverse_function( SEXP obj, int depth) ;
+
     bool in_data( SEXP s) ;
 
     void cache_indata_map() ;

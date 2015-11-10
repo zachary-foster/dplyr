@@ -44,6 +44,10 @@ namespace dplyr {
     return res ;
   }
 
+  TraverseResult GlobalSubstitute::traverse_function( SEXP obj, int depth ){
+    return TraverseResult( obj, false ) ;
+  }
+
   TraverseResult GlobalSubstitute::traverse(SEXP obj, int depth){
     DBG("traverse. obj", obj) ;
 
@@ -87,6 +91,10 @@ namespace dplyr {
 
   TraverseResult GlobalSubstitute::traverse_call(SEXP obj, int depth){
     DBG("traverse_call", obj) ;
+
+    if( CAR(obj) == Rf_install("function")) {
+      return traverse_function(obj, depth) ;
+    }
 
     if( CAR(obj) == Rf_install("global") ){
       return substitute_global(obj, depth+1) ;
