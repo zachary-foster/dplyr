@@ -68,6 +68,16 @@ namespace dplyr {
     return TraverseResult(obj, false) ;
   }
 
+  TraverseResult GlobalSubstitute::substitute_order_by( SEXP obj, int depth){
+    SEXP order_by = CADR(obj) ;
+    SEXP call = CADDR(obj) ;
+    SEXP fun = CAR(call) ;
+    SEXP args = CDR(call) ;
+    RObject new_call = Rf_lang3( Rf_install("with_order"), order_by, fun ) ;
+    SETCDR( CDDR(new_call), args ) ;
+    return TraverseResult( new_call, true ) ;
+  }
+
   TraverseResult GlobalSubstitute::substitute_dollar(SEXP obj, int depth){
     RObject lhs = CADR(obj) ;
     RObject rhs = CADDR(obj) ;
@@ -91,6 +101,10 @@ namespace dplyr {
 
   TraverseResult GlobalSubstitute::traverse_call(SEXP obj, int depth){
     DBG("traverse_call", obj) ;
+
+    if( CAR(obj) == Rf_install("order_by") ){
+      return traverse( substitute_order_by(obj, depth + 1).result, depth + 1 ) ;
+    }
 
     if( CAR(obj) == Rf_install("function")) {
       return traverse_function(obj, depth) ;

@@ -49,6 +49,9 @@ namespace dplyr {
     // traverse a function
     TraverseResult traverse_function( SEXP obj, int depth) ;
 
+    // deal with order_by( ... )
+    TraverseResult substitute_order_by( SEXP obj, int depth ) ;
+
     bool in_data( SEXP s) ;
 
     void cache_indata_map() ;
