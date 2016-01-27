@@ -1,6 +1,16 @@
 # dplyr 0.4.3.9000
 
-* `bind_rows` handles 0 length named list (#1515). 
+* `bind_rows` handles promotion to strings (#1538). 
+
+* `summarise` handles min/max of already summarised variable (#1622).
+
+* `lead` and `lag` more careful about more complicate expressions (#1588).
+
+* grouped `mutate` correctly fails on incompatible columns (#1641).
+
+* `combine` handles `NULL` (#1596).
+
+* `bind_rows` handles 0 length named list (#1515).
 
 * `group_by` supports `column` (#1012).
 

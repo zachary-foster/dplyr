@@ -10,21 +10,13 @@ bool has_no_class( const RObject& arg) {
 }
 
 bool hybridable( RObject arg ){
+    if( Rf_inherits(arg, "Date") || Rf_inherits(arg, "POSIXct") || Rf_inherits(arg, "difftime") ) return true ;
+
     if( arg.isObject() || arg.isS4() ) return false ;
     int type = arg.sexp_type() ;
     switch( type ){
         case INTSXP:
-            {
-                if( has_no_class(arg) || Rf_inherits(arg, "Date") || Rf_inherits(arg, "POSIXct") )
-                    return true ;
-                break ;
-            }
         case REALSXP:
-            {
-                if( has_no_class(arg) || Rf_inherits(arg, "Date") || Rf_inherits(arg, "POSIXct") || Rf_inherits(arg, "difftime") )
-                    return true ;
-                break ;
-            }
         case LGLSXP:
         case STRSXP:
         case CPLXSXP:
@@ -335,12 +327,11 @@ template < template<int> class Templ>
 Result* leadlag_prototype(SEXP call, const LazySubsets& subsets, int nargs){
     LeadLag args(call) ;
     if( !args.ok ) return 0 ;
-
     RObject& data = args.data ;
-    bool is_summary = subsets.is_summary(data) ;
-    int n = args.n ;
 
     if( TYPEOF(data) == SYMSXP && subsets.count(data) ){
+        bool is_summary = subsets.is_summary(data) ;
+        int n = args.n ;
         data = subsets.get_variable(data) ;
 
         switch( TYPEOF(data) ){
@@ -1906,8 +1897,8 @@ SEXP mutate_grouped(const DataFrame& df, const LazyDots& dots){
         Shield<SEXP> call_( lazy.expr() );
         SEXP call = call_ ;
         SEXP name = lazy.name() ;
-
         proxy.set_env( env ) ;
+
         if( TYPEOF(call) == SYMSXP ){
             if(proxy.has_variable(call)){
                 SEXP variable = variables[i] = proxy.get_variable( PRINTNAME(call) ) ;
@@ -1915,6 +1906,7 @@ SEXP mutate_grouped(const DataFrame& df, const LazyDots& dots){
                 accumulator.set( name, variable) ;
             } else {
                 SEXP v = env.find(CHAR(PRINTNAME(call))) ;
+                check_supported_type(v, name) ;
                 if( Rf_isNull(v) ){
                     stop( "unknown variable: %s", CHAR(PRINTNAME(call)) );
                 } else if( Rf_length(v) == 1){
